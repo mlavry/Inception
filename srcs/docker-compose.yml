@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
 
   mariadb:
@@ -25,3 +23,22 @@ services:
     networks:
       - inception
     restart: always
+
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+    restart: always
+
+volumes:
+  db_data:
+  wp_data:
+
+networks:
+  inception:
+    driver: bridge
