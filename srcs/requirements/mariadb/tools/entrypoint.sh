@@ -8,7 +8,7 @@ chown -R mysql:mysql /run/mysqld
 
 # 2) Si /var/lib/mysql/mysql n'existe pas => volume vide => 1er lancement
 
-if [! -d /var/lib/mysql/mysql ]; then
+if [ ! -d /var/lib/mysql/mysql ]; then
 	echo "MariaDB: first init..."
 
 	# Initialise les fichiers système MariaDB dans le volume
@@ -45,8 +45,9 @@ if [! -d /var/lib/mysql/mysql ]; then
 		SQL
 
 	# Arret du serveur temporaire
-	mariadb-admin --socket=/run/mysqld/mysqld.sock shutdown >/dev/null 2>&1
-	|| kill "$pid"
+	if ! mariadb-admin --socket=/run/mysqld/mysqld.sock shutdown >/dev/null 2>&1; then
+		kill "$pid" 2>/dev/null || true
+	fi
 	wait "$pid" 2>/dev/null || true
 	echo "MariaDB: init done."
 fi
