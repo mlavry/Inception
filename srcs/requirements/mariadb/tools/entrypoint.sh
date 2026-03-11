@@ -1,56 +1,56 @@
 #!/bin/sh
 set -eu
 
-# 1) Dossier runtime du socket
+echo "STEP 1: script started"
 
 mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld
 
-# 2) Si /var/lib/mysql/mysql n'existe pas => volume vide => 1er lancement
+echo "STEP 2: checking wordpress database dir"
 
-if [ ! -d /var/lib/mysql/mysql ]; then
-	echo "MariaDB: first init..."
+: "${MYSQL_ROOT_PASSWORD:?Missing MYSQL_ROOT_PASSWORD}"
+: "${MYSQL_DATABASE:?Missing MYSQL_DATABASE}"
+: "${MYSQL_USER:?Missing MYSQL_USER}"
+: "${MYSQL_PASSWORD:?Missing MYSQL_PASSWORD}"
 
-	# Initialise les fichiers système MariaDB dans le volume
+if [ ! -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
+	echo "STEP 3: first init detected"
+
 	mariadb-install-db --user=mysql --datadir=/var/lib/mysql
+	echo "STEP 4: install-db done"
 
-	# Démarre temporairement MariaDB (local uniquement) pour exécuter du SQL
 	mysqld --user=mysql --datadir=/var/lib/mysql --skip-networking --socket=/run/mysqld/mysqld.sock &
 	pid="$!"
+	echo "STEP 5: temp mysqld started"
 
-	# Attend que MariaDB réponde 
 	i=0
 	while ! mariadb-admin --socket=/run/mysqld/mysqld.sock ping >/dev/null 2>&1; do
 		i=$((i + 1))
 		if [ "$i" -ge 30 ]; then
-			echo "MariaDB: startup timeout"
+			echo "STEP FAIL: startup timeout"
 			exit 1
 		fi
 		sleep 1
 	done
+	echo "STEP 6: temp mysqld ready"
 
-	# Vérifie que les variables existent (sinon stop net)
-	: "${MYSQL_ROOT_PASSWORD:?Missing MYSQL_ROOT_PASSWORD}"
-	: "${MYSQL_DATABASE:?Missing MYSQL_DATABASE}"
-	: "${MYSQL_USER:?Missing MYSQL_USER}"
-	: "${MYSQL_PASSWORD:?Missing MYSQL_PASSWORD}"
+	env -u MYSQL_HOST -u MYSQL_TCP_PORT -u MYSQL_UNIX_PORT \
+	mariadb --protocol=SOCKET --socket=/run/mysqld/mysqld.sock -uroot -e "
+	ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
+	CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
+	CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
+	GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
+	FLUSH PRIVILEGES;
+"
 
-	# Configure root + crée DB + user WordPress
-	mariadb --socket=/run/mysqld/mysqld.sock <<-SQL
-		ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-		DELETE FROM mysql.user WHERE User='${MYSQL_USER}';
-		CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
-		CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
-		GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
-		FLUSH PRIVILEGES;
-		SQL
+echo "STEP 7: SQL executed"
 
-	# Arret du serveur temporaire
 	if ! mariadb-admin --socket=/run/mysqld/mysqld.sock shutdown >/dev/null 2>&1; then
 		kill "$pid" 2>/dev/null || true
 	fi
 	wait "$pid" 2>/dev/null || true
-	echo "MariaDB: init done."
+	echo "STEP 8: init done"
 fi
 
+echo "STEP 10: final mysqld exec"
 exec mysqld --user=mysql --datadir=/var/lib/mysql
