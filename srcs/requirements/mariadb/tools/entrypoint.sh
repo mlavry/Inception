@@ -38,8 +38,9 @@ if [ ! -d /var/lib/mysql/mysql ]; then
 	# Configure root + crée DB + user WordPress
 	mariadb --socket=/run/mysqld/mysqld.sock <<-SQL
 		ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
+		DELETE FROM mysql.user WHERE User='${MYSQL_USER}';
 		CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
-		CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
+		CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
 		GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
 		FLUSH PRIVILEGES;
 		SQL
