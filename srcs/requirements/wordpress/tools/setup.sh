@@ -2,10 +2,9 @@
 set -eu
 
 
-echo "⏳ Waiting for mariaDB..."
+echo "⏳ Waiting for MariaDB..."
 
-while ! mariadb -h"$MYSQL_HOST" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" \
-"$MYSQL_DATABASE" -e "SELECT 1;" >/dev/null 2>&1
+while ! mariadb-admin ping -h"$MYSQL_HOST" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent
 do
 	sleep 2
 done
@@ -30,7 +29,7 @@ if [ ! -f wp-config.php ]; then
 		--dbpass="$MYSQL_PASSWORD" \
 		--dbhost="$MYSQL_HOST"
 
-	echo "Installing WorPress..."
+	echo "Installing WordPress..."
 	wp core install \
 		--allow-root \
 		--url="$DOMAIN_NAME" \

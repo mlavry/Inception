@@ -8,6 +8,6 @@ COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-COPY conf/99-network.cnf /etc/mysql/mariadb.conf.d/99-network.cnf
+COPY tools/99-network.cnf /etc/mysql/mariadb.conf.d/99-network.cnf
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
