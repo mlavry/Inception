@@ -3,6 +3,7 @@ FROM debian:bookworm
 RUN apt-get update && apt-get install -y \
 	php-fpm \
 	php-mysql \
+	php-redis \
 	mariadb-client \
 	curl \
 	wget \

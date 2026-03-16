@@ -32,6 +32,10 @@ if [ ! -f wp-config.php ]; then
 		--dbpass="$MYSQL_PASSWORD" \
 		--dbhost="$MYSQL_HOST"
 
+	echo "Configuring Redis..."
+	wp config set WP_REDIS_HOST 'redis' --allow-root
+	wp config set WP_REDIS_PORT 6379 --raw --allow-root
+
 	echo "Installing WordPress..."
 	wp core install \
 		--allow-root \
@@ -44,6 +48,10 @@ if [ ! -f wp-config.php ]; then
 	wp user create "$WP_USER" "$WP_USER_EMAIL" \
 		--user_pass="$WP_USER_PASSWORD" \
 		--allow-root
+	
+	echo "Installing Redis plugin..."
+	wp plugin install redis-cache --activate --allow-root
+	wp redis enable --allow-root
 fi
 
 sed -i 's|listen = /run/php/php8.2-fpm.sock|listen = 9000|g' \
