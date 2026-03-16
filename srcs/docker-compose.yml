@@ -58,6 +58,13 @@ services:
       - inception
     restart: always
 
+  static:
+    build: ./requirements/static
+    container_name: static
+    networks:
+      - inception
+    restart: always
+
 volumes:
   db_data:
     driver: local
