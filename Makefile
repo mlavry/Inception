@@ -1,4 +1,4 @@
-NAME := Inception
+NAME := inception
 COMPOSE_FILE := srcs/docker-compose.yml
 COMPOSE := docker compose -f $(COMPOSE_FILE)
 
@@ -44,4 +44,4 @@ fclean: clean
 
 re: clean up
 
-.PHONY: all up build down start restart logs ps directories clean fclean re
+.PHONY: all up build down start stop restart logs ps directories clean fclean re
