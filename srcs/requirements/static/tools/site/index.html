@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Inception - Infrastructure Docker</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+	<h1>Inception</h1>
+	<p>Infrastructure Docker multi-services</p>
+	<p class="author">42 Mulhouse - mlavry</p>
+</header>
+
+<section class="architecture">
+	<h2>Architecture</h2>
+	<div class="grid">
+		<div class="card">
+			<h3>NGINX</h3>
+			<p>Reverse proxy sécurisé (TLS 1.2 / 1.3). Unique point d'entrée sur le port 443.</p>
+		</div>
+		<div class="card">
+			<h3>WordPress</h3>
+			<p>Application PHP-FPM servant le site web principal.</p>
+		</div>
+		<div class="card">
+			<h3>MariaDB</h3>
+			<p>Base de données relationnelle persistante.</p>
+		</div>
+		<div class="card">
+			<h3>Redis</h3>
+			<p>Système de cache en mémoire pour améliorer les performances.</p>
+		</div>
+		<div class="card">
+			<h3>Adminer</h3>
+			<p>Interface d'administration de la base de données.</p>
+		</div>
+		<div class="card">
+			<h3>Static Website</h3>
+			<p>Site HTML/CSS servi depuis un conteneur dédié.</p>
+		</div>
+	</div>
+</section>
+
+<section class="persistence">
+	<h2>Persistance & Volumes</h2>
+	<ul>
+		<li>Volumes Docker nommés</li>
+		<li>Stockage dans <code>/home/mlavry/data</code></li>
+		<li>Données MariaDB persistantes</li>
+		<li>Fichiers WordPress persistants</li>
+	</ul>
+</section>
+
+<section class="security">
+	<h2>Sécurité</h2>
+	<ul>
+		<li>HTTPS uniquement (port 443)</li>
+		<li>Certificat SSL auto-signé</li>
+		<li>Docker Secrets pour les mots de passe</li>
+		<li>Réseau Docker interne isolé</li>
+	</ul>
+</section>
+
+<section class="bonus">
+	<h2>Bonus réalisés</h2>
+	<ul>
+		<li>Redis Cache</li>
+		<li>Adminer</li>
+		<li>Static Website</li>
+	</ul>
+</section>
+
+<footer>
+	<p>Projet Inception - Docker & Infrastructure</p>
+</footer>
+
+</body>
+</html>
