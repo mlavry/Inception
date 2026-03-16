@@ -51,6 +51,13 @@ services:
       - inception
     restart: always
 
+  redis:
+    build: ./requirements/redis
+    container_name: redis
+    networks:
+      - inception
+    restart: always
+
 volumes:
   db_data:
     driver: local
