@@ -81,6 +81,16 @@ services:
       - inception
     restart: always
 
+  portainer:
+    build: ./requirements/portainer
+    container_name: portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - inception
+    restart: always
+
 volumes:
   db_data:
     driver: local
@@ -95,6 +105,8 @@ volumes:
       type: none
       o: bind
       device: /home/mlavry/data/wordpress
+  
+  portainer_data:
 
 networks:
   inception:
