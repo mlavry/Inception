@@ -65,6 +65,22 @@ services:
       - inception
     restart: always
 
+  ftp:
+    build: ./requirements/ftp
+    container_name: ftp
+    env_file:
+      - .env
+    secrets:
+      - ftp_password
+    volumes:
+      - wp_data:/var/www/html
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    networks:
+      - inception
+    restart: always
+
 volumes:
   db_data:
     driver: local
@@ -93,3 +109,5 @@ secrets:
     file: ../secrets/wp_user_password.txt
   wp_admin_password:
     file: ../secrets/wp_admin_password.txt
+  ftp_password:
+    file: ../secrets/ftp_password.txt
