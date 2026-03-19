@@ -1,0 +1,21 @@
+------------- FTP --------------
+
+- ftp localhost
+
+- docker inspect wordpress | grep wp_data
+- docker inspect ftp | grep wp_data
+
+(check port info)
+
+------------- Redis --------------
+
+
+- docker exec -it redis redis-cli ping
+
+- docker exec -it redis redis-cli info keyspace
+
+
+
+Autres directement sur le site 
+
+
