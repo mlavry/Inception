@@ -38,6 +38,8 @@ directories:
 
 clean:
 	$(COMPOSE) down -v
+	sudo rm -rf /home/mlavry/data/mariadb/* /home/mlavry/data/mariadb/.[!.]* /home/mlavry/data/mariadb/..?*
+	sudo rm -rf /home/$(USER)/data/wordpress/*
 
 fclean: clean
 	docker system prune -af

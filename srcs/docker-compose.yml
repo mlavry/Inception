@@ -3,8 +3,9 @@ services:
   mariadb:
     build: ./requirements/mariadb
     container_name: mariadb
-    env_file:
-      - .env
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
     secrets:
       - db_password
       - db_root_password
@@ -30,6 +31,12 @@ services:
     networks:
       - inception
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep php-fpm || pgrep php-fpm8.2 || pgrep php-fpm7.4"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   nginx:
     build: ./requirements/nginx
@@ -39,7 +46,8 @@ services:
     volumes:
       - wp_data:/var/www/html
     depends_on:
-      - wordpress
+      wordpress:
+        condition: service_healthy
     networks:
       - inception
     restart: always
